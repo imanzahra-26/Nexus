@@ -9,6 +9,8 @@ import { entrepreneurs } from '../../data/users';
 import { getRequestsFromInvestor, createCollaborationRequest } from '../../data/collaborationRequests';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { VideoCall } from '../../components/VideoCall/VideoCall';
+import { DocumentChamber } from '../../components/DocumentChamber/DocumentChamber';
 
 export const InvestorDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -136,6 +138,12 @@ export const InvestorDashboard: React.FC = () => {
           </p>
         )}
       </div>
+      {/* Video Call Section */}
+     <div style={{ marginTop: '20px' }}>
+       <VideoCall userName={user?.name || 'Investor'} />
+      </div>
+      {/* Document Chamber */}
+       <DocumentChamber />
 
       {/* Availability Slots Section */}
       <div style={{ 
