@@ -8,20 +8,18 @@ import { CollaborationRequestCard } from '../../components/collaboration/Collabo
 import { InvestorCard } from '../../components/investor/InvestorCard';
 import { useAuth } from '../../context/AuthContext';
 import { CollaborationRequest } from '../../types';
-import { getRequestsForEntrepreneur, updateRequestStatus } from '../../data/collaborationRequests';
-// import { investors } from '../../data/users';
+import { getRequestsForEntrepreneur } from '../../data/collaborationRequests';
+import { investors } from '../../data/users';
 
 export const EntrepreneurDashboard: React.FC = () => {
   const { user } = useAuth();
   const [collaborationRequests, setCollaborationRequests] = useState<CollaborationRequest[]>([]);
-  // const [recommendedInvestors, setRecommendedInvestors] = useState(investors.slice(0, 3));
+  const [recommendedInvestors, setRecommendedInvestors] = useState(investors.slice(0, 3));
   
   useEffect(() => {
     if (user) {
-      console.log("Loading requests for entrepreneur:", user.id);  // Add this
       // Load collaboration requests
       const requests = getRequestsForEntrepreneur(user.id);
-      console.log("Found requests:", requests);  // Add this
       setCollaborationRequests(requests);
     }
   }, [user]);
@@ -36,92 +34,10 @@ export const EntrepreneurDashboard: React.FC = () => {
   
   if (!user) return null;
   
-  // Get incoming meeting requests
-  const incomingRequests = getRequestsForEntrepreneur(user.id);
   const pendingRequests = collaborationRequests.filter(req => req.status === 'pending');
-  
-  // Accept meeting request
-const acceptRequest = (requestId: string) => {
-  updateRequestStatus(requestId, 'accepted');
-    // Refresh requests after accept
-    const updatedRequests = getRequestsForEntrepreneur(user.id);
-    setCollaborationRequests(updatedRequests);
-    alert('Meeting request accepted!');
-  };
-
-  // Decline meeting request
-const declineRequest = (requestId: string) => {
-  updateRequestStatus(requestId, 'rejected');
-    // Refresh requests after decline
-    const updatedRequests = getRequestsForEntrepreneur(user.id);
-    setCollaborationRequests(updatedRequests);
-    alert('Meeting request declined');
-  };
   
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Incoming Meeting Requests Section */}
-      {incomingRequests.filter(req => req.status === 'pending').length > 0 && (
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '20px', 
-          borderRadius: '10px',
-          marginBottom: '20px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-        }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '15px' }}>📬 Meeting Requests</h3>
-          {incomingRequests.filter(req => req.status === 'pending').map((request) => (
-            <div key={request.id} style={{
-              padding: '15px',
-              backgroundColor: '#FEF3C7',
-              borderRadius: '8px',
-              marginBottom: '10px',
-              borderLeft: '4px solid #F59E0B'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1 }}>
-                   <strong>{request.investorId || 'Investor'}</strong>
-                   <p style={{ fontSize: '14px', color: '#6B7280' }}>Meeting request - Status: {request.status}</p>
-                    {request.message && (
-                    <div style={{ fontSize: '14px', marginTop: '5px', whiteSpace: 'pre-line' }}>
-                    {request.message}
-                 </div>
-             )}
-          </div>
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                  <button
-                    onClick={() => acceptRequest(request.id)}
-                    style={{
-                      backgroundColor: '#10B981',
-                      color: 'white',
-                      padding: '8px 20px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    ✅ Accept
-                  </button>
-                  <button
-                    onClick={() => declineRequest(request.id)}
-                    style={{
-                      backgroundColor: '#EF4444',
-                      color: 'white',
-                      padding: '8px 20px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    ❌ Decline
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-      
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Welcome, {user.name}</h1>
@@ -129,7 +45,9 @@ const declineRequest = (requestId: string) => {
         </div>
         
         <Link to="/investors">
-          <Button leftIcon={<PlusCircle size={18} />}>
+          <Button
+            leftIcon={<PlusCircle size={18} />}
+          >
             Find Investors
           </Button>
         </Link>
