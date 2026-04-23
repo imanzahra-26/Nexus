@@ -92,7 +92,6 @@ export const InvestorDashboard: React.FC = () => {
         : [...prevSelected, industry]
     );
   };
-<<<<<<< HEAD
 
   const addAvailabilitySlot = () => {
     if (newSlot.date && newSlot.startTime && newSlot.endTime) {
@@ -423,12 +422,6 @@ export const InvestorDashboard: React.FC = () => {
                       Request Meeting
                     </button>
                   </div>
-=======
-                  <EntrepreneurCard
-                    key={entrepreneur.id}
-                    entrepreneur={entrepreneur}
-                  />
->>>>>>> d30dccd604dcf95ee4e093161519eb032833a289
                 ))}
               </div>
             ) : (
