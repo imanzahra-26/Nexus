@@ -4,7 +4,6 @@ import { Users, PieChart, Filter, Search, PlusCircle } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
-<<<<<<< HEAD
 import { useAuth } from '../../context/AuthContext';
 import { entrepreneurs } from '../../data/users';
 import { getRequestsFromInvestor, createCollaborationRequest } from '../../data/collaborationRequests';
@@ -12,20 +11,12 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { VideoCall } from '../../components/VideoCall/VideoCall';
 import { DocumentChamber } from '../../components/DocumentChamber/DocumentChamber';
-=======
-import { Badge } from '../../components/ui/Badge';
-import { EntrepreneurCard } from '../../components/entrepreneur/EntrepreneurCard';
-import { useAuth } from '../../context/AuthContext';
-import { Entrepreneur } from '../../types';
-import { entrepreneurs } from '../../data/users';
-import { getRequestsFromInvestor } from '../../data/collaborationRequests';
->>>>>>> d30dccd604dcf95ee4e093161519eb032833a289
+import { PaymentSection } from '../../components/Payment/PaymentSection';
 
 export const InvestorDashboard: React.FC = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
-<<<<<<< HEAD
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [availabilitySlots, setAvailabilitySlots] = useState<any[]>([]);
   const [showAddSlot, setShowAddSlot] = useState(false);
@@ -44,47 +35,22 @@ export const InvestorDashboard: React.FC = () => {
   if (!user) return null;
 
   const existingRequests = getRequestsFromInvestor(user.id);
-  const requestedEntrepreneurIds = existingRequests.map(req => req.entrepreneurId);
 
   const filteredEntrepreneurs = entrepreneurs.filter(entrepreneur => {
-=======
-  
-  if (!user) return null;
-  
-  // Get collaboration requests sent by this investor
-  const sentRequests = getRequestsFromInvestor(user.id);
-  const requestedEntrepreneurIds = sentRequests.map(req => req.entrepreneurId);
-  
-  // Filter entrepreneurs based on search and industry filters
-  const filteredEntrepreneurs = entrepreneurs.filter(entrepreneur => {
-    // Search filter
->>>>>>> d30dccd604dcf95ee4e093161519eb032833a289
     const matchesSearch = searchQuery === '' || 
       entrepreneur.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       entrepreneur.startupName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       entrepreneur.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entrepreneur.pitchSummary.toLowerCase().includes(searchQuery.toLowerCase());
+      (entrepreneur.pitchSummary && entrepreneur.pitchSummary.toLowerCase().includes(searchQuery.toLowerCase()));
     
-<<<<<<< HEAD
-=======
-    // Industry filter
->>>>>>> d30dccd604dcf95ee4e093161519eb032833a289
     const matchesIndustry = selectedIndustries.length === 0 || 
       selectedIndustries.includes(entrepreneur.industry);
     
     return matchesSearch && matchesIndustry;
   });
-<<<<<<< HEAD
 
   const industries = Array.from(new Set(entrepreneurs.map(e => e.industry)));
 
-=======
-  
-  // Get unique industries for filter
-  const industries = Array.from(new Set(entrepreneurs.map(e => e.industry)));
-  
-  // Toggle industry selection
->>>>>>> d30dccd604dcf95ee4e093161519eb032833a289
   const toggleIndustry = (industry: string) => {
     setSelectedIndustries(prevSelected => 
       prevSelected.includes(industry)
@@ -172,12 +138,14 @@ export const InvestorDashboard: React.FC = () => {
           </p>
         )}
       </div>
+
       {/* Video Call Section */}
-     <div style={{ marginTop: '20px' }}>
-       <VideoCall userName={user?.name || 'Investor'} />
-      </div>
+      <VideoCall userName={user?.name || 'Investor'} />
+
       {/* Document Chamber */}
-       <DocumentChamber />
+      <DocumentChamber />
+      {/* Payment Section */}
+      <PaymentSection />
 
       {/* Availability Slots Section */}
       <div style={{ 
@@ -223,7 +191,7 @@ export const InvestorDashboard: React.FC = () => {
         )}
 
         {availabilitySlots.length === 0 ? (
-          <p style={{ color: '#6B7280', textAlign: 'center', padding: '20px' }}>No availability slots added yet.</p>
+          <p style={{ color: '#6B7280', textAlign: 'center', padding: '20px' }}>No availability slots added yet. Click "+ Add Availability" to create one.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {availabilitySlots.map((slot) => (
@@ -256,169 +224,79 @@ export const InvestorDashboard: React.FC = () => {
       {showRequestForm && selectedEntrepreneur && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ backgroundColor: 'white', padding: '25px', borderRadius: '12px', width: '500px', maxWidth: '90%' }}>
-            <h3>Request Meeting with {selectedEntrepreneur.startupName}</h3>
-            <input type="date" value={meetingRequest.date} onChange={(e) => setMeetingRequest({ ...meetingRequest, date: e.target.value })} style={{ width: '100%', padding: '8px', margin: '10px 0' }} />
-            <input type="time" value={meetingRequest.time} onChange={(e) => setMeetingRequest({ ...meetingRequest, time: e.target.value })} style={{ width: '100%', padding: '8px', margin: '10px 0' }} />
-            <textarea value={meetingRequest.message} onChange={(e) => setMeetingRequest({ ...meetingRequest, message: e.target.value })} placeholder="Message (optional)" style={{ width: '100%', padding: '8px', margin: '10px 0' }} rows={3} />
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '15px' }}>Request Meeting with {selectedEntrepreneur.startupName}</h3>
+            <div style={{ marginBottom: '15px' }}>
+              <label>Date:</label>
+              <input type="date" value={meetingRequest.date} onChange={(e) => setMeetingRequest({ ...meetingRequest, date: e.target.value })} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              <label>Time:</label>
+              <input type="time" value={meetingRequest.time} onChange={(e) => setMeetingRequest({ ...meetingRequest, time: e.target.value })} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              <label>Message (optional):</label>
+              <textarea value={meetingRequest.message} onChange={(e) => setMeetingRequest({ ...meetingRequest, message: e.target.value })} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #D1D5DB' }} rows={3} placeholder="Add a personal message..." />
+            </div>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <button onClick={() => { setShowRequestForm(false); setSelectedEntrepreneur(null); }}>Cancel</button>
-              <button onClick={sendMeetingRequest} style={{ backgroundColor: '#4F46E5', color: 'white', padding: '8px 16px', borderRadius: '6px' }}>Send Request</button>
+              <button onClick={() => { setShowRequestForm(false); setSelectedEntrepreneur(null); }} style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #D1D5DB', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={sendMeetingRequest} style={{ backgroundColor: '#4F46E5', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}>Send Request</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Rest of original dashboard */}
-=======
-  
-  return (
-    <div className="space-y-6 animate-fade-in">
->>>>>>> d30dccd604dcf95ee4e093161519eb032833a289
+      {/* Dashboard Header */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Discover Startups</h1>
           <p className="text-gray-600">Find and connect with promising entrepreneurs</p>
         </div>
-<<<<<<< HEAD
         <Link to="/entrepreneurs">
           <Button leftIcon={<PlusCircle size={18} />}>View All Startups</Button>
         </Link>
       </div>
 
+      {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="w-full md:w-2/3">
-          <Input placeholder="Search startups..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} fullWidth startAdornment={<Search size={18} />} />
+          <Input placeholder="Search startups, industries, or keywords..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} fullWidth startAdornment={<Search size={18} />} />
         </div>
-=======
-        
-        <Link to="/entrepreneurs">
-          <Button
-            leftIcon={<PlusCircle size={18} />}
-          >
-            View All Startups
-          </Button>
-        </Link>
-      </div>
-      
-      {/* Filters and search */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="w-full md:w-2/3">
-          <Input
-            placeholder="Search startups, industries, or keywords..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            fullWidth
-            startAdornment={<Search size={18} />}
-          />
-        </div>
-        
->>>>>>> d30dccd604dcf95ee4e093161519eb032833a289
         <div className="w-full md:w-1/3">
           <div className="flex items-center space-x-2">
             <Filter size={18} className="text-gray-500" />
             <span className="text-sm font-medium text-gray-700">Filter by:</span>
-<<<<<<< HEAD
             <div className="flex flex-wrap gap-2">
               {industries.map(industry => (
-                <div key={industry} className={`inline-flex cursor-pointer px-2 py-1 rounded-full text-sm ${selectedIndustries.includes(industry) ? 'bg-primary-500 text-white' : 'bg-gray-100'}`} onClick={() => toggleIndustry(industry)}>
+                <div key={industry} className={`inline-flex cursor-pointer px-2 py-1 rounded-full text-sm ${selectedIndustries.includes(industry) ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-700'}`} onClick={() => toggleIndustry(industry)}>
                   {industry}
                 </div>
-=======
-            
-            <div className="flex flex-wrap gap-2">
-              {industries.map(industry => (
-                <Badge
-                  key={industry}
-                  variant={selectedIndustries.includes(industry) ? 'primary' : 'gray'}
-                  className="cursor-pointer"
-                  onClick={() => toggleIndustry(industry)}
-                >
-                  {industry}
-                </Badge>
->>>>>>> d30dccd604dcf95ee4e093161519eb032833a289
               ))}
             </div>
           </div>
         </div>
       </div>
-<<<<<<< HEAD
 
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-primary-50"><CardBody><div><Users size={20} /><p>Total Startups</p><h3>{entrepreneurs.length}</h3></div></CardBody></Card>
-        <Card className="bg-secondary-50"><CardBody><div><PieChart size={20} /><p>Industries</p><h3>{industries.length}</h3></div></CardBody></Card>
-        <Card className="bg-accent-50"><CardBody><div><Users size={20} /><p>Your Connections</p><h3>{existingRequests.filter(req => req.status === 'accepted').length}</h3></div></CardBody></Card>
+        <Card className="bg-primary-50"><CardBody><div className="flex items-center"><div className="p-3 bg-primary-100 rounded-full mr-4"><Users size={20} /></div><div><p className="text-sm font-medium">Total Startups</p><h3 className="text-xl font-semibold">{entrepreneurs.length}</h3></div></div></CardBody></Card>
+        <Card className="bg-secondary-50"><CardBody><div className="flex items-center"><div className="p-3 bg-secondary-100 rounded-full mr-4"><PieChart size={20} /></div><div><p className="text-sm font-medium">Industries</p><h3 className="text-xl font-semibold">{industries.length}</h3></div></div></CardBody></Card>
+        <Card className="bg-accent-50"><CardBody><div className="flex items-center"><div className="p-3 bg-accent-100 rounded-full mr-4"><Users size={20} /></div><div><p className="text-sm font-medium">Your Connections</p><h3 className="text-xl font-semibold">{existingRequests.filter(req => req.status === 'accepted').length}</h3></div></div></CardBody></Card>
       </div>
 
+      {/* Entrepreneurs Grid */}
       <div>
         <Card>
-          <CardHeader><h2>Featured Startups</h2></CardHeader>
-=======
-      
-      {/* Stats summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-primary-50 border border-primary-100">
-          <CardBody>
-            <div className="flex items-center">
-              <div className="p-3 bg-primary-100 rounded-full mr-4">
-                <Users size={20} className="text-primary-700" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-primary-700">Total Startups</p>
-                <h3 className="text-xl font-semibold text-primary-900">{entrepreneurs.length}</h3>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-        
-        <Card className="bg-secondary-50 border border-secondary-100">
-          <CardBody>
-            <div className="flex items-center">
-              <div className="p-3 bg-secondary-100 rounded-full mr-4">
-                <PieChart size={20} className="text-secondary-700" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-secondary-700">Industries</p>
-                <h3 className="text-xl font-semibold text-secondary-900">{industries.length}</h3>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-        
-        <Card className="bg-accent-50 border border-accent-100">
-          <CardBody>
-            <div className="flex items-center">
-              <div className="p-3 bg-accent-100 rounded-full mr-4">
-                <Users size={20} className="text-accent-700" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-accent-700">Your Connections</p>
-                <h3 className="text-xl font-semibold text-accent-900">
-                  {sentRequests.filter(req => req.status === 'accepted').length}
-                </h3>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-      </div>
-      
-      {/* Entrepreneurs grid */}
-      <div>
-        <Card>
-          <CardHeader>
-            <h2 className="text-lg font-medium text-gray-900">Featured Startups</h2>
-          </CardHeader>
-          
->>>>>>> d30dccd604dcf95ee4e093161519eb032833a289
+          <CardHeader><h2 className="text-lg font-medium text-gray-900">Featured Startups</h2></CardHeader>
           <CardBody>
             {filteredEntrepreneurs.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredEntrepreneurs.map(entrepreneur => (
-<<<<<<< HEAD
                   <div key={entrepreneur.id} className="border rounded-lg p-4 shadow-sm bg-white">
                     <h3 className="font-bold text-lg">{entrepreneur.startupName}</h3>
-                    <p>{entrepreneur.name}</p>
+                    <p className="text-gray-700">{entrepreneur.name}</p>
                     <p className="text-sm text-gray-500">{entrepreneur.industry}</p>
-                    <button onClick={() => { setSelectedEntrepreneur(entrepreneur); setMeetingRequest({ ...meetingRequest, entrepreneurId: entrepreneur.id }); setShowRequestForm(true); }} className="mt-3 w-full bg-indigo-600 text-white py-2 px-4 rounded-lg">
+                    <p className="text-sm text-gray-600 mt-2">{entrepreneur.pitchSummary?.substring(0, 100)}...</p>
+                    <button onClick={() => { setSelectedEntrepreneur(entrepreneur); setMeetingRequest({ ...meetingRequest, entrepreneurId: entrepreneur.id }); setShowRequestForm(true); }} className="mt-3 w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700">
                       Request Meeting
                     </button>
                   </div>
@@ -426,22 +304,8 @@ export const InvestorDashboard: React.FC = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-<<<<<<< HEAD
-                <p>No startups match your filters</p>
-                <Button variant="outline" onClick={() => { setSearchQuery(''); setSelectedIndustries([]); }}>Clear filters</Button>
-=======
                 <p className="text-gray-600">No startups match your filters</p>
-                <Button 
-                  variant="outline" 
-                  className="mt-2"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedIndustries([]);
-                  }}
-                >
-                  Clear filters
-                </Button>
->>>>>>> d30dccd604dcf95ee4e093161519eb032833a289
+                <Button variant="outline" className="mt-2" onClick={() => { setSearchQuery(''); setSelectedIndustries([]); }}>Clear filters</Button>
               </div>
             )}
           </CardBody>
