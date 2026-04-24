@@ -1,4 +1,3 @@
-import { GuidedTour } from '../../components/Tour/GuidedTour';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, PieChart, Filter, Search, PlusCircle } from 'lucide-react';
@@ -13,6 +12,7 @@ import 'react-calendar/dist/Calendar.css';
 import { VideoCall } from '../../components/VideoCall/VideoCall';
 import { DocumentChamber } from '../../components/DocumentChamber/DocumentChamber';
 import { PaymentSection } from '../../components/Payment/PaymentSection';
+// import { GuidedTour } from '../../components/Tour/GuidedTour';
 
 export const InvestorDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -99,7 +99,7 @@ export const InvestorDashboard: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Calendar Section */}
-     <div className="calendar-section" style={{ background: 'white', padding: 20, borderRadius: 10, marginBottom: 20 }}>
+      <div className="calendar-section" style={{ background: 'white', padding: 20, borderRadius: 10, marginBottom: 20 }}>
         <h3 style={{ fontSize: 18, fontWeight: 'bold' }}>📅 Schedule a Meeting</h3>
         <Calendar onChange={(v) => setSelectedDate(v as Date | null)} value={selectedDate} />
         {selectedDate && <p>Selected: {selectedDate.toDateString()}</p>}
@@ -108,18 +108,18 @@ export const InvestorDashboard: React.FC = () => {
       {/* Video Call Section */}
       <div className="video-call-container">
         <VideoCall userName={user?.name || 'Investor'} />
-     </div>
+      </div>
 
       {/* Document Chamber */}
       <DocumentChamber />
 
       {/* Payment Section */}
       <div className="payment-section">
-       <PaymentSection />
+        <PaymentSection />
       </div>
 
       {/* Availability Slots Section */}
-     <div className="availability-slots" style={{ background: 'white', padding: 20, borderRadius: 10, marginBottom: 20 }}>
+      <div className="availability-slots" style={{ background: 'white', padding: 20, borderRadius: 10, marginBottom: 20 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <h3 style={{ fontSize: 18, fontWeight: 'bold' }}>🕐 My Availability Slots</h3>
           <button onClick={() => { setShowAddSlot(!showAddSlot); setEditingSlotId(null); setNewSlot({ date: '', startTime: '', endTime: '' }); }} style={{ background: '#4F46E5', color: 'white', padding: '8px 16px', borderRadius: 8, border: 'none' }}>{showAddSlot ? 'Cancel' : '+ Add'}</button>
@@ -203,7 +203,7 @@ export const InvestorDashboard: React.FC = () => {
       </div>
 
       {/* Entrepreneurs Grid */}
-    <Card className="featured-startups">
+      <Card className="featured-startups">
         <CardHeader><h2>Featured Startups</h2></CardHeader>
         <CardBody>
           <div className="grid grid-cols-3 gap-6">
@@ -218,7 +218,8 @@ export const InvestorDashboard: React.FC = () => {
           </div>
         </CardBody>
       </Card>
-      <GuidedTour />
+
+      {/* <GuidedTour /> */}
     </div>
   );
 };
