@@ -9,62 +9,54 @@ import { InvestorCard } from '../../components/investor/InvestorCard';
 import { useAuth } from '../../context/AuthContext';
 import { CollaborationRequest } from '../../types';
 import { getRequestsForEntrepreneur, updateRequestStatus } from '../../data/collaborationRequests';
-// import { investors } from '../../data/users';
+import { investors } from '../../data/users';
 
 export const EntrepreneurDashboard: React.FC = () => {
   const { user } = useAuth();
   const [collaborationRequests, setCollaborationRequests] = useState<CollaborationRequest[]>([]);
-  // const [recommendedInvestors, setRecommendedInvestors] = useState(investors.slice(0, 3));
-  
+  const [recommendedInvestors] = useState(investors.slice(0, 3));
+
   useEffect(() => {
     if (user) {
-      console.log("Loading requests for entrepreneur:", user.id);  // Add this
-      // Load collaboration requests
       const requests = getRequestsForEntrepreneur(user.id);
-      console.log("Found requests:", requests);  // Add this
       setCollaborationRequests(requests);
     }
   }, [user]);
-  
+
   const handleRequestStatusUpdate = (requestId: string, status: 'accepted' | 'rejected') => {
-    setCollaborationRequests(prevRequests => 
-      prevRequests.map(req => 
+    setCollaborationRequests(prevRequests =>
+      prevRequests.map(req =>
         req.id === requestId ? { ...req, status } : req
       )
     );
   };
-  
+
   if (!user) return null;
-  
-  // Get incoming meeting requests
+
   const incomingRequests = getRequestsForEntrepreneur(user.id);
   const pendingRequests = collaborationRequests.filter(req => req.status === 'pending');
-  
-  // Accept meeting request
-const acceptRequest = (requestId: string) => {
-  updateRequestStatus(requestId, 'accepted');
-    // Refresh requests after accept
+
+  const acceptRequest = (requestId: string) => {
+    updateRequestStatus(requestId, 'accepted');
     const updatedRequests = getRequestsForEntrepreneur(user.id);
     setCollaborationRequests(updatedRequests);
     alert('Meeting request accepted!');
   };
 
-  // Decline meeting request
-const declineRequest = (requestId: string) => {
-  updateRequestStatus(requestId, 'rejected');
-    // Refresh requests after decline
+  const declineRequest = (requestId: string) => {
+    updateRequestStatus(requestId, 'rejected');
     const updatedRequests = getRequestsForEntrepreneur(user.id);
     setCollaborationRequests(updatedRequests);
     alert('Meeting request declined');
   };
-  
+
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Incoming Meeting Requests Section */}
+      {/* Incoming Meeting Requests */}
       {incomingRequests.filter(req => req.status === 'pending').length > 0 && (
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '20px', 
+        <div style={{
+          backgroundColor: 'white',
+          padding: '20px',
           borderRadius: '10px',
           marginBottom: '20px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
@@ -79,15 +71,15 @@ const declineRequest = (requestId: string) => {
               borderLeft: '4px solid #F59E0B'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1 }}>
-                   <strong>{request.investorId || 'Investor'}</strong>
-                   <p style={{ fontSize: '14px', color: '#6B7280' }}>Meeting request - Status: {request.status}</p>
-                    {request.message && (
+                <div>
+                  <strong>{request.investorId || 'Investor'}</strong>
+                  <p style={{ fontSize: '14px', color: '#6B7280' }}>Meeting request - Status: {request.status}</p>
+                  {request.message && (
                     <div style={{ fontSize: '14px', marginTop: '5px', whiteSpace: 'pre-line' }}>
-                    {request.message}
-                 </div>
-             )}
-          </div>
+                      {request.message}
+                    </div>
+                  )}
+                </div>
                 <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                   <button
                     onClick={() => acceptRequest(request.id)}
@@ -121,21 +113,19 @@ const declineRequest = (requestId: string) => {
           ))}
         </div>
       )}
-      
+
+      {/* Welcome Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Welcome, {user.name}</h1>
           <p className="text-gray-600">Here's what's happening with your startup today</p>
         </div>
-        
         <Link to="/investors">
-          <Button leftIcon={<PlusCircle size={18} />}>
-            Find Investors
-          </Button>
+          <Button leftIcon={<PlusCircle size={18} />}>Find Investors</Button>
         </Link>
       </div>
-      
-      {/* Summary cards */}
+
+      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-primary-50 border border-primary-100">
           <CardBody>
@@ -150,7 +140,7 @@ const declineRequest = (requestId: string) => {
             </div>
           </CardBody>
         </Card>
-        
+
         <Card className="bg-secondary-50 border border-secondary-100">
           <CardBody>
             <div className="flex items-center">
@@ -166,7 +156,7 @@ const declineRequest = (requestId: string) => {
             </div>
           </CardBody>
         </Card>
-        
+
         <Card className="bg-accent-50 border border-accent-100">
           <CardBody>
             <div className="flex items-center">
@@ -180,7 +170,7 @@ const declineRequest = (requestId: string) => {
             </div>
           </CardBody>
         </Card>
-        
+
         <Card className="bg-success-50 border border-success-100">
           <CardBody>
             <div className="flex items-center">
@@ -195,16 +185,16 @@ const declineRequest = (requestId: string) => {
           </CardBody>
         </Card>
       </div>
-      
+
+      {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Collaboration requests */}
+        {/* Collaboration Requests */}
         <div className="lg:col-span-2 space-y-4">
           <Card>
             <CardHeader className="flex justify-between items-center">
               <h2 className="text-lg font-medium text-gray-900">Collaboration Requests</h2>
               <Badge variant="primary">{pendingRequests.length} pending</Badge>
             </CardHeader>
-            
             <CardBody>
               {collaborationRequests.length > 0 ? (
                 <div className="space-y-4">
@@ -222,14 +212,14 @@ const declineRequest = (requestId: string) => {
                     <AlertCircle size={24} className="text-gray-500" />
                   </div>
                   <p className="text-gray-600">No collaboration requests yet</p>
-                  <p className="text-sm text-gray-500 mt-1">When investors are interested in your startup, their requests will appear here</p>
+                  <p className="text-sm text-gray-500 mt-1">When investors are interested, requests will appear here</p>
                 </div>
               )}
             </CardBody>
           </Card>
         </div>
-        
-        {/* Recommended investors */}
+
+        {/* Recommended Investors */}
         <div className="space-y-4">
           <Card>
             <CardHeader className="flex justify-between items-center">
@@ -238,7 +228,6 @@ const declineRequest = (requestId: string) => {
                 View all
               </Link>
             </CardHeader>
-            
             <CardBody className="space-y-4">
               {recommendedInvestors.map(investor => (
                 <InvestorCard
